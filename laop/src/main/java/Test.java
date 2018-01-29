@@ -4,7 +4,7 @@ import core.RulesBase;
 public class Test {
     public static void main(String[] args) {
 
-      /*  AbstractSystem as= AbstractSystem.getInstance();
+       AbstractSystem as= AbstractSystem.getInstance();
         as.addRule("ЗИ", "ПЗИ", 0.5, "additive");
         as.addRule("ПИ", "ПЗИ", 0.5, "additive");
         as.addRule("ИИ", "ПИ", 1, "pessimistic");
@@ -23,10 +23,10 @@ public class Test {
         as.addRule("Окно2", "ЗЧР", 0.5, "additive");
 
         as.addFact("Окно1", 0.5);
-        as.addFact("Окно2", 0.5);*/
+        as.addFact("Окно2", 0.5);
 
 
-        //System.out.println(RulesBase.getInstance().listComponent(new Component("ИИ"), ));
+        System.out.println();
 
     }
 }
