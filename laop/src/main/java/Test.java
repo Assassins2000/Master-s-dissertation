@@ -26,7 +26,7 @@ public class Test {
         as.addFact("Окно2", 0.5);
 
 
-        System.out.println();
+//        System.out.println();
 
     }
 }
