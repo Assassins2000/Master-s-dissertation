@@ -1,9 +1,15 @@
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonWriter;
 import core.*;
 import org.jetbrains.annotations.Contract;
 
+import java.io.*;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Класс служит для создания проивзольной системы
@@ -63,6 +69,27 @@ public class AbstractSystem {
         fb.setFacts(new Hashtable<>());
         rb.setRules(new Hashtable<>());
     }
+
+
+    public void exportRuleBase() throws IOException {
+//        Writer writer = new FileWriter("Output.json");
+//        String js= new Gson().toJson(rb.getRules());
+//        writer.write(js);
+//        writer.close();
+
+
+        Gson gson = new Gson();
+
+        BufferedReader br = new BufferedReader(
+                new FileReader("Output.json"));
+        Type type= new TypeToken<Hashtable<Integer, Rule>>(){}.getType();
+        Hashtable<Integer,Rule> rules = gson.fromJson(br, type);
+
+
+        System.out.println(rules);
+        //System.out.println(new Gson().));
+    }
+
 
 
     /**
@@ -131,5 +158,19 @@ public class AbstractSystem {
         }
     }
 
-
 }
+
+/*class CustomConverter implements JsonDeserializer{
+
+    @Override
+    public Rule deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+
+        JsonObject object = jsonElement.getAsJsonObject();
+        String component= object.get("component").getAsString();
+        String subsystem= object.get("subsystem").getAsString();
+        double value= object.get("value").getAsDouble();
+        String ratio= object.get("ration").getAsString();
+
+        return new Rule(component, subsystem, value, ratio);
+    }
+}*/

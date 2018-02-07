@@ -29,6 +29,8 @@ public class RulesBase {
      */
     private Hashtable<Integer, Rule> rules;
 
+
+
     public void setRules(Hashtable<Integer, Rule> rules) {
         this.rules = rules;
     }
@@ -137,4 +139,7 @@ public class RulesBase {
     }
 
 
+    public Hashtable<Integer, Rule> getRules() {
+        return rules;
+    }
 }
