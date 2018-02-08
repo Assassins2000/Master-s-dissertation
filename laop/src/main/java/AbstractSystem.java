@@ -1,6 +1,5 @@
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonWriter;
 import core.*;
 import org.jetbrains.annotations.Contract;
 
@@ -9,20 +8,22 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Класс служит для создания проивзольной системы
  * Реализует паттерн Singleton
+ *
  * @author Balanovsky Danil
  */
 public class AbstractSystem {
 
     private static AbstractSystem ourInstance = new AbstractSystem();
+
     private AbstractSystem() {
         this.fb = FactsBase.getInstance();
         this.rb = RulesBase.getInstance();
     }
+
     @Contract(pure = true)
     public static AbstractSystem getInstance() {
         return ourInstance;
@@ -41,8 +42,9 @@ public class AbstractSystem {
 
     /**
      * Метод создает и добавляет факт в базу фактов
+     *
      * @param component обозначение компонента
-     * @param value падение эффективности
+     * @param value     падение эффективности
      * @return ключ созданного факта
      */
     public int addFact(String component, double value) {
@@ -52,10 +54,11 @@ public class AbstractSystem {
 
     /**
      * Метод созлает и добавляет правило в базу правил
+     *
      * @param component обозначение комопнентп
      * @param subsystem обозначение подсистемы
-     * @param value значение убыли эффективности компонента системы
-     * @param ratio тип объединения при каждом компоненте подсистемы
+     * @param value     значение убыли эффективности компонента системы
+     * @param ratio     тип объединения при каждом компоненте подсистемы
      * @return возвращает ключ созданного правила
      */
     public int addRule(String component, String subsystem, double value, String ratio) {
@@ -65,35 +68,36 @@ public class AbstractSystem {
     /**
      * Процедура для очистки базы фактов и правил
      */
-    public void deleteAll(){
+    public void deleteAll() {
         fb.setFacts(new Hashtable<>());
         rb.setRules(new Hashtable<>());
     }
 
-
     public void exportRuleBase() throws IOException {
-//        Writer writer = new FileWriter("Output.json");
-//        String js= new Gson().toJson(rb.getRules());
-//        writer.write(js);
-//        writer.close();
+        Writer writer = new FileWriter("Output.json");
+        String js = new Gson().toJson(rb.getRules());
+        writer.write(js);
+        writer.close();
+    }
 
+    public Hashtable<Integer, Rule> importRuleBase(String path) throws IOException {
 
         Gson gson = new Gson();
 
         BufferedReader br = new BufferedReader(
-                new FileReader("Output.json"));
-        Type type= new TypeToken<Hashtable<Integer, Rule>>(){}.getType();
-        Hashtable<Integer,Rule> rules = gson.fromJson(br, type);
+                new FileReader(path));
+        Type type = new TypeToken<Hashtable<Integer, Rule>>() {
+        }.getType();
 
+         rb.setRules(gson.fromJson(br, type));
 
-        System.out.println(rules);
-        //System.out.println(new Gson().));
+        return rb.getRules();
+
     }
-
-
 
     /**
      * Метод расчитывает эффективность работы системы с учетом всех потерь
+     *
      * @return возвращает эффективность работы системы
      */
     public double getEfficiency() {
@@ -110,12 +114,13 @@ public class AbstractSystem {
         Hashtable<Integer, Fact> newFacts = new Hashtable<>();
 
         for (int keyF : fb.getKeys()) {
-            Fact mainSystem= null;
+            Fact mainSystem = null;
             for (int keyR : rb.getKeys()) {
                 /*
                      Если обозначение компонента в факте keyF равно такому же обозначению компонента в правиле keyR
                  */
-                if (fb.getFact(keyF).getComponent() == rb.getRule(keyR).getComponent()) {
+
+                if (fb.getFact(keyF).getComponent().equals(rb.getRule(keyR).getComponent())) {
                     //коллекция компонентов
                     List<Component> lComponent = new ArrayList<>();
                     //заполнение коллекции компонентами, которые входят в подсистему fb.getFact(keyF).getComponent()
@@ -135,15 +140,15 @@ public class AbstractSystem {
                         Если компонент, заданный в факте keyF является главной системой
                      */
                     if (fb.getFact(keyF).getComponent() == rb.getMainSystem().getComponent()) {
-                        mainSystem= fb.getFact(keyF);
+                        mainSystem = fb.getFact(keyF);
                         //newFacts.put(newFacts.size() + 1, fb.getFact(keyF));
                     }
                 }
 
             }
 
-            if(mainSystem!= null){
-                newFacts.put(newFacts.size()+1, mainSystem);
+            if (mainSystem != null) {
+                newFacts.put(newFacts.size() + 1, mainSystem);
             }
 
         }
@@ -153,24 +158,11 @@ public class AbstractSystem {
             return getEfficiency();
 
         } else {
-            return 1-newFacts.get(1).getValue();
+            return 1 - newFacts.get(1).getValue();
 
         }
     }
 
 }
 
-/*class CustomConverter implements JsonDeserializer{
 
-    @Override
-    public Rule deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-
-        JsonObject object = jsonElement.getAsJsonObject();
-        String component= object.get("component").getAsString();
-        String subsystem= object.get("subsystem").getAsString();
-        double value= object.get("value").getAsDouble();
-        String ratio= object.get("ration").getAsString();
-
-        return new Rule(component, subsystem, value, ratio);
-    }
-}*/
