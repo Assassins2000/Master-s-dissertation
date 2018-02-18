@@ -113,6 +113,8 @@ public class AbstractSystem {
         //коллекция новых фактов
         Hashtable<Integer, Fact> newFacts = new Hashtable<>();
 
+        //String genComponent=;
+
         for (int keyF : fb.getKeys()) {
             Fact mainSystem = null;
             for (int keyR : rb.getKeys()) {
@@ -158,7 +160,15 @@ public class AbstractSystem {
             return getEfficiency();
 
         } else {
-            return 1 - newFacts.get(1).getValue();
+            if (newFacts.get(1).getComponent()!=rb.getMainSystem().getComponent()){
+                fb.setFacts(newFacts);
+                return getEfficiency();
+            }
+            else
+            {
+                return 1 - newFacts.get(1).getValue();
+
+            }
 
         }
     }

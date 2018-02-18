@@ -71,7 +71,7 @@ public class FactsBase {
         Hashtable<Integer, Fact> factsZero = new Hashtable<>();
 
         for (int key : getKeys()) {
-            if (facts.get(key).getValue() != 0) {
+            if (facts.get(key).getValue() != -2) {
                 factsZero.put(key, facts.get(key));
             }
         }
@@ -145,19 +145,23 @@ public class FactsBase {
      */
     private void pool(int keyI, int keyJ){
 
-        switch (RulesBase.getInstance()
-                .searchInSybsistems((facts.get(keyJ)))
-                .getRatio()) {
-            case "additive": {
-                facts.get(keyI).setValue(facts.get(keyI).getValue() + facts.get(keyJ).getValue());
-                facts.get(keyJ).setValue(0);
-                break;
-            }
-            case "pessimistic": {
-                facts.get(keyI).setValue(Math.max(facts.get(keyI).getValue(), facts.get(keyJ).getValue()));
-                facts.get(keyJ).setValue(0);
-                break;
+        if (facts.get(keyI).getValue()!=-2)
+        {
+            switch (RulesBase.getInstance()
+                    .searchInSybsistems((facts.get(keyJ)))
+                    .getRatio()) {
+                case "additive": {
+                    facts.get(keyI).setValue(facts.get(keyI).getValue() + facts.get(keyJ).getValue());
+                    facts.get(keyJ).setValue(-2);
+                    break;
+                }
+                case "pessimistic": {
+                    facts.get(keyI).setValue(Math.max(facts.get(keyI).getValue(), facts.get(keyJ).getValue()));
+                    facts.get(keyJ).setValue(-2);
+                    break;
+                }
             }
         }
+
     }
 }
