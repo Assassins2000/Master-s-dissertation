@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Класс служит для создания проивзольной системы
@@ -65,6 +66,43 @@ public class AbstractSystem {
         return rb.addRule(new Rule(component, subsystem, value, ratio));
     }
 
+    public Object[][] deleteFact(int key){
+        fb.getFacts().remove(key);
+        return facttoObj();
+    }
+    public Object[][] deleteRule(int key){
+        rb.getRules().remove(key);
+        return ruletoObj();
+    }
+
+    public Object[][] facttoObj(){
+        Set<Integer> keys = fb.getKeys();
+        int keysSize= keys.size();
+        Object[][] objMass= new Object[keysSize][3];
+        keysSize--;
+        for (int key : keys){
+            objMass[keysSize][0]= fb.getFact(key).getComponent();
+            objMass[keysSize][1]= fb.getFact(key).getValue();
+            objMass[keysSize][2]= key;
+            keysSize--;
+        }
+        return objMass;
+    }
+    public Object[][] ruletoObj(){
+        Set<Integer> keys = rb.getKeys();
+        int keysSize= keys.size();
+        Object[][] objMass= new Object[keysSize][5];
+        keysSize--;
+        for (int key : keys){
+            objMass[keysSize][0]= rb.getRule(key).getComponent();
+            objMass[keysSize][1]= rb.getRule(key).getSubsystem();
+            objMass[keysSize][2]= rb.getRule(key).getValue();
+            objMass[keysSize][3]= rb.getRule(key).getRatio();
+            objMass[keysSize][4]= key;
+            keysSize--;
+        }
+        return objMass;
+    }
     /**
      * Процедура для очистки базы фактов и правил
      */
@@ -80,7 +118,7 @@ public class AbstractSystem {
         writer.close();
     }
 
-    public Hashtable<Integer, Rule> importRuleBase(String path) throws IOException {
+    public Object[][] importRuleBase(String path) throws IOException {
 
         Gson gson = new Gson();
 
@@ -91,19 +129,25 @@ public class AbstractSystem {
 
          rb.setRules(gson.fromJson(br, type));
 
-        return rb.getRules();
-
+        return ruletoObj();
     }
 
+    public String createBackup(){
+
+        return new Gson().toJson(fb.getFacts());
+    }
     /**
      * Метод расчитывает эффективность работы системы с учетом всех потерь
      *
      * @return возвращает эффективность работы системы
      */
-    public double getEfficiency() {
+    public double getEfficiency()  {
 
-        RulesBase rb = RulesBase.getInstance();
-        FactsBase fb = FactsBase.getInstance();
+        if (fb.getKeys().size()==0){
+          throw new RuntimeException();
+       }
+     //   RulesBase rb = RulesBase.getInstance();
+       // FactsBase fb = FactsBase.getInstance();
 
         //объединение потерь
         fb.poolLosses();
@@ -141,16 +185,15 @@ public class AbstractSystem {
                     /*
                         Если компонент, заданный в факте keyF является главной системой
                      */
-                    if (fb.getFact(keyF).getComponent() == rb.getMainSystem().getComponent()) {
+                    if (fb.getFact(keyF).getComponent().equals(rb.getMainSystem().getComponent())) {
                         mainSystem = fb.getFact(keyF);
-                        //newFacts.put(newFacts.size() + 1, fb.getFact(keyF));
                     }
                 }
 
             }
 
             if (mainSystem != null) {
-                newFacts.put(newFacts.size() + 1, mainSystem);
+               newFacts.put(newFacts.size() + 1, mainSystem);
             }
 
         }
@@ -160,7 +203,8 @@ public class AbstractSystem {
             return getEfficiency();
 
         } else {
-            if (newFacts.get(1).getComponent()!=rb.getMainSystem().getComponent()){
+
+            if (newFacts.get(1).getComponent().equals(rb.getMainSystem().getComponent())==false){
                 fb.setFacts(newFacts);
                 return getEfficiency();
             }

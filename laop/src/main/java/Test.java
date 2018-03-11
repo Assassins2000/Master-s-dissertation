@@ -19,6 +19,7 @@ public class Test {
 
 
 
+
        // as.addRule("ЗЧТ", "ЗНП", 0.33, "additive");
         //as.addRule("ЗЧР", "ЗНП", 0.67, "additive");
         //as.addRule("Окно1", "ЗЧР", 0.5, "additive");
@@ -26,7 +27,9 @@ public class Test {
 
         //as.importRuleBase("Output.json");
 
-        as.addFact("ИЗ", 0.5);
+
+        as.addFact("ИИ", 1);
+
        // as.addFact("ЗИ", 0);
 
         System.out.println(as.getEfficiency());

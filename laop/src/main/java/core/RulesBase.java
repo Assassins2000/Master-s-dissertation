@@ -77,7 +77,7 @@ public class RulesBase {
                 /*
                     Если обозначение подсистемы в правеле keyI равно обозначению компонента в правеле keyJ
                  */
-                if (rules.get(keyI).getSubsystem()==rules.get(keyJ).getComponent()){
+                if (rules.get(keyI).getSubsystem().equals(rules.get(keyJ).getComponent())){
                     flag=true;
                 }
             }
@@ -98,7 +98,7 @@ public class RulesBase {
     public Rule searchInSybsistems(Fact fact) {
 
         for (int key : getKeys()) {
-            if (rules.get(key).getSubsystem() == fact.getComponent()) {
+            if (rules.get(key).getSubsystem().equals(fact.getComponent())) {
                 return rules.get(key);
             }
         }
@@ -115,12 +115,12 @@ public class RulesBase {
     public List<Component> listComponent(Component subsys, List<Component> listComp) {
 
         //исследуем полученный массив компонентов на наличие подсистем
-        List<Rule> ruless = new ArrayList<>();
+         List<Rule> ruless = new ArrayList<>();
         for (int keyR : getKeys()) {
             /*
                 Если обозначение подсистемы в правеле равно обозначению заданной подсистемы
              */
-            if (rules.get(keyR).getSubsystem() == subsys.getComponent()) {
+            if (rules.get(keyR).getSubsystem().equals(subsys.getComponent())) {
                 ruless.add(rules.get(keyR));
                 listComp.add(new Component(rules.get(keyR).getComponent()));
             }

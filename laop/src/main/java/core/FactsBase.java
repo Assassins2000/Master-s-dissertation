@@ -110,7 +110,7 @@ public class FactsBase {
                    Если обозначение комопнента из списка равно такому же обозначению в базе фактов и
                    компонент не является главной подсистемой
                  */
-                if (comp.get(i).getComponent() == facts.get(keyC).getComponent() & comp.get(i).getComponent() != RulesBase.getInstance().getRule(keyRule).getComponent()) {
+                if (comp.get(i).getComponent().equals(facts.get(keyC).getComponent()) & comp.get(i).getComponent().equals(RulesBase.getInstance().getRule(keyRule).getComponent())==false) {
                     flag = true;
                 }
             }
@@ -128,7 +128,7 @@ public class FactsBase {
         //поиск фактов с одинаковыми обозначениями компонента
         for (int keyI : getKeys()) {
             for (int keyJ : getKeys()) {
-                if (facts.get(keyI).getComponent() == facts.get(keyJ).getComponent() & keyI != keyJ) {
+                if (facts.get(keyI).getComponent().equals(facts.get(keyJ).getComponent()) & keyI != keyJ) {
                     pool(keyI, keyJ);
                 }
             }

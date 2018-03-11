@@ -1,7 +1,9 @@
 import core.Fact;
 import core.Rule;
+import sun.plugin2.message.Message;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,13 +16,18 @@ public class guiTest implements ActionListener {
 
     JTable table;
     JTable table1;
-    Hashtable<Integer, Rule> massRule;
-    Hashtable<Integer, Fact> massFact;
-    RuleTableModel rtb;
-    FactTableModel ftb;
+    Object[][] massRule;
+    Object[][] massFact;
+    int keyFact;
+    DefaultTableModel rtb;
+    DefaultTableModel ftb;
     JLabel jlbFlag;
     JTextField component;
     JTextField value;
+    JTextField component1;
+    JTextField value1;
+    JTextField subsystem;
+    JTextField ratio;
     AbstractSystem as;
 
     public guiTest() {
@@ -29,14 +36,14 @@ public class guiTest implements ActionListener {
 
         JFrame jfrm = new JFrame("guiTest");
         jfrm.setLayout(new FlowLayout());
-        jfrm.setSize(200, 200);
+        jfrm.setSize(450, 400);
         jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //-----------------------------------------------------
         JMenuBar jmb = new JMenuBar(); //создать строку меню
         //создать меню
-        JMenu jmFile = new JMenu("File");
-        JMenuItem jmiOpen = new JMenuItem("Open");
-        JMenuItem jmiClose = new JMenuItem("Close");
+        JMenu jmFile = new JMenu("Система");
+        JMenuItem jmiOpen = new JMenuItem("Загрузить");
+        JMenuItem jmiClose = new JMenuItem("Настроить");
 
         jmFile.add(jmiOpen);
         jmFile.add(jmiClose);
@@ -47,90 +54,129 @@ public class guiTest implements ActionListener {
         jmiClose.addActionListener(this);
 
         jfrm.setJMenuBar(jmb);
-        //-----------------------------------------------------
-        massRule = new Hashtable<>();
-        rtb = new RuleTableModel(massRule);
-        table = new JTable(rtb);
-        JScrollPane jscrlp = new JScrollPane(table);
-        jfrm.getContentPane().add(jscrlp);
-        //-----------------------------------------------------
-        massFact = new Hashtable<>();
-        ftb = new FactTableModel(massFact);
+
+
+        ftb = new DefaultTableModel(
+                new Object[][]{
+
+                },
+                new String[]{
+                        "Компонент", "Значение", "ИД"
+                }
+        );
         table1 = new JTable(ftb);
         JScrollPane jscrlp1 = new JScrollPane(table1);
-        jfrm.getContentPane().add(jscrlp1);
 
-        component= new JTextField(10);
+       table1.setPreferredScrollableViewportSize(new Dimension(400,200));
+
+        jfrm.add(jscrlp1);
+
+        JLabel jlb1= new JLabel("Компонент");
+        JLabel jlb2= new JLabel("Значение");
+
+        component = new JTextField(10);
         value = new JTextField(10);
         component.setAlignmentX(1);
+        component.setEditable(false);
+        value.setEditable(false);
 
         JButton btn = new JButton("Добавить факт");
         btn.addActionListener(e -> {
-            int key=as.addFact(component.getText().toString(), Double.parseDouble(value.getText()));
-            massFact.put(key, new Fact(component.getText().toString(), Double.parseDouble(value.getText())));
-            ftb.fireTableDataChanged();
+            try {
+                keyFact = as.addFact(component.getText().toString(), Double.parseDouble(value.getText()));
+                massFact = as.facttoObj();
+                ftb.addRow(new String[]{component.getText().toString(), value.getText(), Integer.toString(keyFact)});
+            }
+            catch (Exception exp)
+            {
+                JOptionPane.showMessageDialog(jfrm,"Факт не задан");
+            }
 
         });
 
-        JButton btn1= new JButton("Посчитать");
-        btn1.addActionListener(e -> jlbFlag.setText(Double.toString(as.getEfficiency())));
+        JButton btn1 = new JButton("Посчитать");
+        JTextArea log= new JTextArea(100, 30);
+        JLabel jlb= new JLabel("Ответ:");
+        btn1.addActionListener(e -> {
+            try{
+                String logText= as.createBackup();
+                jlb.setText(jlb.getText()+ Double.toString(as.getEfficiency()));
+                as.deleteAll();
+                table1.setModel(ftb);
+                log.setText(log.getText()+ logText+' '+ jlb.getText());
+            }
+            catch (Exception exc)
+            {
+                JOptionPane.showMessageDialog(jfrm, "Факты не заданы");
+            }
+        });
+
+        JButton btn2 = new JButton("Удалить");
+        btn2.addActionListener(e -> {
+            try {
+                as.deleteFact(Integer.parseInt(table1.getModel().getValueAt(table1.getSelectedRow(),2).toString()));
+                jlbFlag.setText(as.facttoObj().toString());
+                ftb.removeRow(table1.getSelectedRow());
+            }
+            catch (Exception exp)
+            {
+                JOptionPane.showMessageDialog(jfrm,"Факт не выбран");
+            }
+        });
 
         jlbFlag = new JLabel("База знаний не загружена");
 
-
+        jfrm.add(jlb1);
         jfrm.add(component);
+        jfrm.add(jlb2);
         jfrm.add(value);
-        jfrm.add(jlbFlag);
         jfrm.add(btn);
         jfrm.add(btn1);
+        jfrm.add(btn2);
+        jfrm.add(jlb);
+        jfrm.add(jlbFlag);
+        jfrm.add(log);
         jfrm.setVisible(true);
+        jfrm.setResizable(false);
 
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        String comStr = e.getActionCommand();
-        switch (comStr) {
-            case "Open": {
+        //String comStr = e.getActionCommand();
+        switch (e.getActionCommand()) {
+            case "Загрузить": {
                 JFileChooser fileopen = new JFileChooser();
                 int ret = fileopen.showDialog(null, "Открыть файл");
                 if (ret == JFileChooser.APPROVE_OPTION) {
                     File file = fileopen.getSelectedFile();
                     try {
-                        Hashtable<Integer, Rule> mass1 = as.importRuleBase(file.getAbsolutePath().toString());
-                        for (int key : mass1.keySet()) {
-                            massRule.put(key, mass1.get(key));
-                        }
+                        massRule = as.importRuleBase(file.getAbsolutePath().toString());
+
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
 
 
                     jlbFlag.setText("База знаний загружена");
-                    rtb.fireTableDataChanged();
+                    component.setEditable(true);
+                    value.setEditable(true);
+
+//                    rtb.fireTableDataChanged();
 
                 }
                 break;
             }
 
-            case "Close": {
-
-//                JFrame jfrm = new JFrame("DB");
-//                jfrm.setLayout(new FlowLayout());
-//
-//                jfrm.setSize(200, 200);
-//                jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//                rtb= new MyTableModel(massRule);
-//                table = new JTable(rtb);
-//                //  JScrollPane jscrlp = new JScrollPane(table);
-//
-//                jfrm.add(table);
-//
-//                jfrm.setVisible(true);
-
-
+            case "Настроить": {
+                try{
+                    new guiDK(massRule);
+                }
+                catch (Exception exc)
+                {
+                    JOptionPane.showMessageDialog(null,"База знаний не загружена");
+                }
                 break;
             }
         }
