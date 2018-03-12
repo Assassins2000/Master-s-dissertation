@@ -36,7 +36,7 @@ public class guiTest implements ActionListener {
 
         JFrame jfrm = new JFrame("guiTest");
         jfrm.setLayout(new FlowLayout());
-        jfrm.setSize(450, 400);
+        jfrm.setSize(450, 480);
         jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //-----------------------------------------------------
         JMenuBar jmb = new JMenuBar(); //создать строку меню
@@ -94,16 +94,17 @@ public class guiTest implements ActionListener {
 
         });
 
+
         JButton btn1 = new JButton("Посчитать");
-        JTextArea log= new JTextArea(100, 30);
-        JLabel jlb= new JLabel("Ответ:");
+        JTextArea log= new JTextArea(5, 30);
+        JScrollPane logS= new JScrollPane(log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        logS.setSize(5,30);
+        JLabel jlb= new JLabel();
         btn1.addActionListener(e -> {
             try{
                 String logText= as.createBackup();
-                jlb.setText(jlb.getText()+ Double.toString(as.getEfficiency()));
-                as.deleteAll();
-                table1.setModel(ftb);
-                log.setText(log.getText()+ logText+' '+ jlb.getText());
+                jlb.setText(Double.toString(as.analaze()));
+                log.setText(log.getText()+ logText+' '+ jlb.getText()+"\n");
             }
             catch (Exception exc)
             {
@@ -135,9 +136,10 @@ public class guiTest implements ActionListener {
         jfrm.add(btn2);
         jfrm.add(jlb);
         jfrm.add(jlbFlag);
-        jfrm.add(log);
+       // jfrm.add(log);
+        jfrm.getContentPane().add(logS);
         jfrm.setVisible(true);
-        jfrm.setResizable(false);
+       // jfrm.setResizable(false);
 
     }
 
