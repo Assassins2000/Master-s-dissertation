@@ -1,0 +1,67 @@
+{
+  "1": {
+    "component": "Сф",
+    "subsystem": "S",
+    "funcRatio": "2",
+    "fallValue": 1,
+    "contribution":true
+  },
+  "2": {
+    "component": "Мв",
+    "subsystem": "S",
+    "funcRatio": "2",
+    "fallValue": 1,
+    "contribution":true
+  },
+  "3": {
+    "component": "Цф",
+    "subsystem": "Сф",
+    "funcRatio": "3",
+    "fallValue": 0.583,
+    "contribution":true
+  },
+  "4": {
+    "component": "Пф",
+    "subsystem": "Сф",
+    "funcRatio": "3",
+    "fallValue": 0.583,
+    "contribution":true
+  },
+  "5": {
+    "component": "Тф",
+    "subsystem": "Сф",
+    "funcRatio": "3",
+    "fallValue": 0.0625,
+    "contribution":true
+  },
+  "6": {
+    "component": "Цф",
+    "subsystem": "Пф",
+    "funcRatio": "3",
+    "fallValue": 0.4,
+    "contribution":true
+  },
+  "7": {
+    "component": "Пф",
+    "subsystem": "Тф",
+    "funcRatio": "3",
+    "fallValue": 0.6,
+    "contribution":true,
+    "funcEffect": 0  ,
+    "criticalPoint": 0.5
+  },
+  "8": {
+    "component": "Пф",
+    "subsystem": "Мв",
+    "funcRatio": "2",
+    "fallValue": 1,
+    "contribution":true
+  },
+  "9": {
+  "component": "Тф",
+  "subsystem": "Мв",
+  "funcRatio": "2",
+  "fallValue": 1,
+  "contribution":true
+}
+}

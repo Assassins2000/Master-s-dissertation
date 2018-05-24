@@ -12,6 +12,9 @@ public class guiDK {
     JTextField value;
     JTextField ratio;
     AbstractSystem as;
+    ButtonGroup group;
+    JRadioButton trueButton;
+    JRadioButton falseButton;
     int keyRule;
 
     public guiDK(Object[][] massRule){
@@ -21,15 +24,15 @@ public class guiDK {
         }
         as= AbstractSystem.getInstance();
 
-        JFrame jfrm = new JFrame("guiTest");
+        JFrame jfrm = new JFrame("guiDK");
         jfrm.setLayout(new FlowLayout());
         jfrm.setSize(450, 400);
-        jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         ////////
         rtb = new DefaultTableModel(
                 massRule,
                 new String[]{
-                        "Компонент", "Подсистема", "Значение", "Отношение", "ИД"
+                        "Компонент", "Подсистема", "Значение", "Отношение", "Вклад", "ИД"
                 }
         );
         table = new JTable(rtb);
@@ -42,6 +45,8 @@ public class guiDK {
         JLabel jlb2= new JLabel("Подсистема");
         JLabel jlb3= new JLabel("Значение");
         JLabel jlb4= new JLabel("Отношение");
+        JLabel jlb5= new JLabel("Положительный вклад");
+        JLabel jlb6= new JLabel("Отрицательный вклад");
 
         component = new JTextField(10);
         component.setAlignmentX(1);
@@ -50,13 +55,28 @@ public class guiDK {
         value= new JTextField(10);
         ratio = new JTextField(10);
 
+        trueButton= new JRadioButton();
+        falseButton= new JRadioButton();
+        group= new ButtonGroup();
+
+        group.add(trueButton);
+        group.add(falseButton);
+
+
         JButton btn1= new JButton("Добавить правило");
 
         btn1.addActionListener(e -> {
 
             try {
-                keyRule= as.addRule(component.getText(), subsystem.getText(), Double.parseDouble(value.getText()), ratio.getText());
-                rtb.addRow(new String[]{component.getText(), subsystem.getText(), value.getText(), ratio.getText(), Integer.toString(keyRule)});
+                boolean flag=false;
+                if (trueButton.isSelected()){
+                    flag=true;
+                }
+                else if(falseButton.isSelected()){
+                    flag=false;
+                }
+                keyRule= as.addRule(component.getText(), subsystem.getText(), Double.parseDouble(value.getText()), Integer.parseInt(ratio.getText()), flag, 0, 0);
+                rtb.addRow(new String[]{component.getText(), subsystem.getText(), value.getText(), ratio.getText(), Boolean.toString(flag), Integer.toString(keyRule)});
             }
             catch (Exception exp)
             {
@@ -67,18 +87,16 @@ public class guiDK {
         JButton btn2 = new JButton("Удалить правило");
         btn2.addActionListener(e->{
 
-            try {
-                as.deleteRule(Integer.parseInt(table.getModel().getValueAt(table.getSelectedRow(),4).toString()));
+           try {
+                as.deleteRule(Integer.parseInt(table.getModel().getValueAt(table.getSelectedRow(),5).toString()));
                 System.out.println(as.ruletoObj().length);
                 rtb.removeRow(table.getSelectedRow());
-            }
-            catch (Exception exp)
-            {
-                JOptionPane.showMessageDialog(jfrm,"Правило не выбрано");
+           }
+           catch (Exception exp)
+           {
+               JOptionPane.showMessageDialog(jfrm,"Правило не выбрано");
             }
         });
-
-
 
 
 
@@ -90,6 +108,11 @@ public class guiDK {
         jfrm.add(value);
         jfrm.add(jlb4);
         jfrm.add(ratio);
+        jfrm.add(jlb5);
+        jfrm.add(trueButton);
+        jfrm.add(jlb6);
+        jfrm.add(falseButton);
+
         jfrm.add(btn1);
         jfrm.add(btn2);
 

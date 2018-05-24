@@ -36,7 +36,7 @@ public class guiTest implements ActionListener {
 
         JFrame jfrm = new JFrame("guiTest");
         jfrm.setLayout(new FlowLayout());
-        jfrm.setSize(450, 480);
+        jfrm.setSize(450, 650);
         jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //-----------------------------------------------------
         JMenuBar jmb = new JMenuBar(); //создать строку меню
@@ -96,7 +96,7 @@ public class guiTest implements ActionListener {
 
 
         JButton btn1 = new JButton("Посчитать");
-        JTextArea log= new JTextArea(5, 30);
+        JTextArea log= new JTextArea(14, 30);
         JScrollPane logS= new JScrollPane(log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         logS.setSize(5,30);
         JLabel jlb= new JLabel();
@@ -160,7 +160,6 @@ public class guiTest implements ActionListener {
                         e1.printStackTrace();
                     }
 
-
                     jlbFlag.setText("База знаний загружена");
                     component.setEditable(true);
                     value.setEditable(true);
@@ -174,11 +173,11 @@ public class guiTest implements ActionListener {
             case "Настроить": {
                 try{
                     new guiDK(massRule);
-                }
-                catch (Exception exc)
-                {
+               }
+              catch (Exception exc)
+               {
                     JOptionPane.showMessageDialog(null,"База знаний не загружена");
-                }
+               }
                 break;
             }
         }

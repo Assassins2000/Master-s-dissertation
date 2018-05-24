@@ -1,0 +1,59 @@
+{
+  "1": {
+    "component": "ДСт",
+    "subsystem": "НСт",
+    "funcRatio": "2",
+    "fallValue": 1,
+    "contribution":true
+  },
+  "2": {
+    "component": "П",
+    "subsystem": "НСт",
+    "funcRatio": "2",
+    "fallValue": 0.5,
+    "contribution":true
+  },
+  "3": {
+    "component": "МС",
+    "subsystem": "ДСт",
+    "funcRatio": "2",
+    "fallValue": 0.7,
+    "contribution":true
+  },
+  "4": {
+    "component": "П",
+    "subsystem": "ДСт",
+    "funcRatio": "2",
+    "fallValue": 1,
+    "contribution":true
+  },
+  "5": {
+    "component": "МЭ",
+    "subsystem": "П",
+    "funcRatio": "2",
+    "fallValue": 0.8,
+    "contribution":true
+  },
+  "6": {
+    "component": "БПЧ",
+    "subsystem": "П",
+    "funcRatio": "2",
+    "fallValue": 0.8,
+    "contribution":true
+  },
+  "7": {
+    "component": "ПРС",
+    "subsystem": "БПЧ",
+    "funcRatio": "2",
+    "fallValue": 0.7,
+    "contribution":true
+  },
+  "8": {
+    "component": "РП",
+    "subsystem": "БПЧ",
+    "funcRatio": "2",
+    "fallValue": 1,
+    "contribution":true
+  }
+
+}

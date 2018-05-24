@@ -23,6 +23,7 @@ public class AbstractSystem {
     private AbstractSystem() {
         this.fb = FactsBase.getInstance();
         this.rb = RulesBase.getInstance();
+        // this.fbBackup= new Hashtable<>();
     }
 
     @Contract(pure = true)
@@ -30,6 +31,7 @@ public class AbstractSystem {
         return ourInstance;
     }
 
+   // private Hashtable<Integer, Fact> fbBackup;
     /**
      * Поле- обеспечивает доступ к базе фактов
      */
@@ -62,8 +64,8 @@ public class AbstractSystem {
      * @param ratio     тип объединения при каждом компоненте подсистемы
      * @return возвращает ключ созданного правила
      */
-    public int addRule(String component, String subsystem, double value, String ratio) {
-        return rb.addRule(new Rule(component, subsystem, value, ratio));
+    public int addRule(String component, String subsystem, double value, int ratio, boolean contribution, int funF, int point) {
+        return rb.addRule(new Rule(component, subsystem, value, ratio, funF, point));
     }
 
     public Object[][] deleteFact(int key){
@@ -82,7 +84,7 @@ public class AbstractSystem {
         keysSize--;
         for (int key : keys){
             objMass[keysSize][0]= fb.getFact(key).getComponent();
-            objMass[keysSize][1]= fb.getFact(key).getValue();
+            objMass[keysSize][1]= fb.getFact(key).getFallValue();
             objMass[keysSize][2]= key;
             keysSize--;
         }
@@ -91,14 +93,15 @@ public class AbstractSystem {
     public Object[][] ruletoObj(){
         Set<Integer> keys = rb.getKeys();
         int keysSize= keys.size();
-        Object[][] objMass= new Object[keysSize][5];
+        Object[][] objMass= new Object[keysSize][6];
         keysSize--;
         for (int key : keys){
             objMass[keysSize][0]= rb.getRule(key).getComponent();
+            objMass[keysSize][3]= rb.getRule(key).getFuncRatio();
+            objMass[keysSize][4]= rb.getRule(key).isContribution();
+            objMass[keysSize][5]= key;
             objMass[keysSize][1]= rb.getRule(key).getSubsystem();
-            objMass[keysSize][2]= rb.getRule(key).getValue();
-            objMass[keysSize][3]= rb.getRule(key).getRatio();
-            objMass[keysSize][4]= key;
+            objMass[keysSize][2]= rb.getRule(key).getFallValue();
             keysSize--;
         }
         return objMass;
@@ -134,14 +137,22 @@ public class AbstractSystem {
 
     public String createBackup(){
 
-        return new Gson().toJson(fb.getFacts());
+        return new GsonBuilder().setPrettyPrinting().create().toJson(fb.getFacts());
+    }
+
+    public double analaze(){
+        Hashtable<Integer, Fact> fbBackup= new Hashtable<>();
+        fbBackup.putAll(fb.getFacts());
+        double result= getEfficiency();
+        fb.setFacts(fbBackup);
+        return result;
     }
     /**
      * Метод расчитывает эффективность работы системы с учетом всех потерь
      *
      * @return возвращает эффективность работы системы
      */
-    public double getEfficiency()  {
+    private double getEfficiency()  {
 
         if (fb.getKeys().size()==0){
           throw new RuntimeException();
@@ -156,7 +167,6 @@ public class AbstractSystem {
 
         //коллекция новых фактов
         Hashtable<Integer, Fact> newFacts = new Hashtable<>();
-
         //String genComponent=;
 
         for (int keyF : fb.getKeys()) {
@@ -179,8 +189,18 @@ public class AbstractSystem {
                     if (fb.haveComponent(lComponent, keyR) == false) {
                         newFacts.put(newFacts.size() + 1, fb.applyFact(keyF, rb.getRule(keyR)));
                     } else {
-                        newFacts.put(newFacts.size() + 1, fb.getFact(keyF));
+
+                        boolean fl= false;
+                        for(int key: newFacts.keySet()) {
+                            if (newFacts.get(key).getComponent().equals(fb.getFact(keyF).getComponent()) && newFacts.get(key).getRuleValue() == fb.getFact(keyF).getRuleValue() && newFacts.get(key).getFallValue() == fb.getFact(keyF).getFallValue()) {
+                                fl=true;
+                            }
+                        }
+                        if (fl==false){
+                            newFacts.put(newFacts.size() + 1, fb.getFact(keyF));
+                        }
                     }
+
                 } else {
                     /*
                         Если компонент, заданный в факте keyF является главной системой
@@ -198,6 +218,7 @@ public class AbstractSystem {
 
         }
 
+        System.out.println("////////////////////////////");
         if (newFacts.size() != 1) {
             fb.setFacts(newFacts);
             return getEfficiency();
@@ -210,7 +231,7 @@ public class AbstractSystem {
             }
             else
             {
-                return 1 - newFacts.get(1).getValue();
+                return 1 - newFacts.get(1).getFallValue();
 
             }
 

@@ -104,6 +104,15 @@ public class RulesBase {
         }
         return null;
     }
+    public Rule searchInComponent(Fact fact) {
+
+        for (int key : getKeys()) {
+            if (rules.get(key).getComponent().equals(fact.getComponent())) {
+                return rules.get(key);
+            }
+        }
+        return null;
+    }
 
 
     /**
